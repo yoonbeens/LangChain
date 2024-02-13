@@ -9,6 +9,9 @@ load_dotenv()
 os.environ["LANGCHAIN_PROJECT"] = "Runnables"
 
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
+
+output_parser = StrOutputParser()
 
 
 # 1. 질문을 입력받는다
@@ -18,13 +21,18 @@ from langchain_core.runnables import RunnableParallel, RunnablePassthrough, Runn
 
 from langchain.prompts import PromptTemplate
 
-prompt = PromptTemplate.from_template("{country}의 수도는 어디야?")
+prompt = PromptTemplate.from_template("{country}의 수도가 어디고, {capital}의 날씨 알려줘")
 prompt 
 
 from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(openai_api_key="")
+model = ChatOpenAI(openai_api_key="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")
 
-chain = prompt | model
+chain = prompt | model | output_parser
 
-chain.invoke({"country": "대한민국"})
+type_check_str = chain.invoke({"country": "대한민국", "capital" : "서울"})
+
+type_check_map = {"Answer" : type_check_str}
+print(type(type_check_str))
+print(type_check_str)
+print(type(type_check_map))
